@@ -1,12 +1,14 @@
 # infping.rb
 
-This is a Ruby reimplementation of infping, written in Go, https://github.com/torhve/infping by Tor Hveem.
+This is a Ruby re-implementation of infping, originally written in Go, https://github.com/torhve/infping by Tor Hveem.
 
 It uses fping to ping one or more targets, it will then store the data inside of InfluxDB, and if you connect Grafana to it you can create nice graphs:
 
 ![hourly](images/screenshot01.png)
 
 ![minutely](images/screenshot02.png)
+
+This project is also hosted on Dockerhub: https://hub.docker.com/repository/docker/kaspergrubbe/infping-rb
 
 ## Run the project
 
