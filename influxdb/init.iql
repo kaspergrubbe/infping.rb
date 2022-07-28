@@ -1,1 +1,2 @@
 CREATE DATABASE infping_rb_testing WITH DURATION 53w REPLICATION 1 SHARD DURATION 1d NAME "53_weeks"
+GRANT ALL ON infping_rb_testing TO infping
