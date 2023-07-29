@@ -4,4 +4,4 @@ source "https://rubygems.org"
 
 git_source(:github) {|repo_name| "https://github.com/#{repo_name}" }
 
-gem "influxdb", "~> 0.8"
+gem 'influxdb-client', '~> 2.9'

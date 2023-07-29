@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 require 'pty'
-require 'influxdb'
+require 'influxdb-client'
 
 def program_exists?(program)
   `type "#{program}" > /dev/null 2>&1;`
@@ -39,24 +39,30 @@ begin
   hosts = ENV['HOSTS']
   raise 'Environment-variable HOSTS not set, exiting!' if hosts.nil?
 
-  influxdb_hostname = ENV['INFLUXDB_HOSTNAME']
-  raise 'Environment-variable INFLUXDB_HOSTNAME not set, exiting!' if influxdb_hostname.nil?
+  influxdb_endpoint = ENV['INFLUXDB_ENDPOINT']
+  raise 'Environment-variable INFLUXDB_ENDPOINT not set, exiting!' if influxdb_endpoint.nil?
+  # TODO parse endpoint data, verify if it's http or https
+  use_ssl = false
 
-  influxdb_database = ENV['INFLUXDB_DATABASE']
-  raise 'Environment-variable INFLUXDB_DATABASE not set, exiting!' if influxdb_database.nil?
+  influxdb_bucket = ENV['INFLUXDB_BUCKET']
+  raise 'Environment-variable INFLUXDB_BUCKET not set, exiting!' if influxdb_bucket.nil?
 
-  influxdb_username = ENV['INFLUXDB_USERNAME']
-  raise 'Environment-variable INFLUXDB_USERNAME not set, exiting!' if influxdb_username.nil?
+  influxdb_org = ENV['INFLUXDB_ORG']
+  raise 'Environment-variable INFLUXDB_ORG not set, exiting!' if influxdb_org.nil?
 
-  influxdb_password = ENV['INFLUXDB_PASSWORD']
-  raise 'Environment-variable INFLUXDB_PASSWORD not set, exiting!' if influxdb_password.nil?
+  influxdb_token = ENV['INFLUXDB_TOKEN']
+  raise 'Environment-variable INFLUXDB_TOKEN not set, exiting!' if influxdb_token.nil?
 
-  influxdb = InfluxDB::Client.new(influxdb_database,
-    host: influxdb_hostname,
-    username: influxdb_username,
-    password: influxdb_password,
-    time_precision: 's',
+  influxdb = InfluxDB2::Client.new(
+    influxdb_endpoint,
+    influxdb_token,
+    bucket: influxdb_bucket,
+    org: influxdb_org,
+    precision: InfluxDB2::WritePrecision::SECOND,
+    use_ssl: use_ssl,
+    debugging: debug?
   )
+  client = influxdb.create_write_api
 
   command = [].tap { |it|
     it << 'fping'
@@ -71,42 +77,37 @@ begin
     hosts.split(',').each do |host|
       it << host.strip
     end
-  }.flatten.join(" ")
+  }.flatten.join(' ')
 
   puts "Command: #{command}"
 
   PTY.spawn(command) do |stdout, stdin, pid|
     begin
       stdout.each do |line|
+        puts line if debug?
+
         case line
         when /\[[0-9+]{2}:[0-9+]{2}:[0-9+]{2}\]/
           # Ignore until this is resolved: https://github.com/schweikert/fping/issues/203
         else
           hostname, lossp, min, avg, max = parse_fping_line(line)
 
-          data = {
-            tags: {
-              host: hostname,
-            },
-            timestamp: Time.now.utc.to_i,
-          }
+          point = InfluxDB2::Point.new(name: 'pings')
+          point.add_tag('host', hostname)
 
-          data[:values] = unless [min, avg, max].any?(&:nil?)
+          unless [min, avg, max].any?(&:nil?)
             puts "#{hostname}: loss=#{lossp}%, min=#{min}, avg=#{avg}, max=#{max}" if debug?
-            {
-              loss: lossp,
-              min:  min,
-              avg:  avg,
-              max:  max,
-            }
+
+            point.add_field('loss', lossp)
+            point.add_field('min', min)
+            point.add_field('avg', avg)
+            point.add_field('max', max)
           else
             puts "#{hostname}: loss=#{lossp}%" if debug?
-            {
-              loss: lossp,
-            }
+            point.add_field('loss', lossp)
           end
 
-          influxdb.write_point('pings', data)
+          client.write(data: point)
         end
       end
     rescue Errno::EIO
