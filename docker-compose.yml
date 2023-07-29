@@ -2,12 +2,18 @@ version: "3.8"
 
 services:
   influxdb:
-    image: influxdb:1.8.2-alpine
+    image: influxdb:2.7.1-alpine
     environment:
-      - INFLUXDB_ADMIN_USER=admin
-      - INFLUXDB_ADMIN_PASSWORD=asupersecretpassword
-      - INFLUXDB_USER=fping
-      - INFLUXDB_USER_PASSWORD=anotsosecretpassword
+      - DOCKER_INFLUXDB_INIT_USERNAME=admin
+      - DOCKER_INFLUXDB_INIT_PASSWORD=asupersecretpassword
+      - DOCKER_INFLUXDB_INIT_ORG=blarghco
+      - DOCKER_INFLUXDB_INIT_BUCKET=bucket
+      - DOCKER_INFLUXDB_INIT_MODE=setup
+      - DOCKER_INFLUXDB_INIT_RETENTION=88w
+
+      - USER_NAME=infping
+      - USER_PASS=grafeverything
+      - USER_BUCKET=infping_rb_testing
     volumes:
       - ./influxdb:/docker-entrypoint-initdb.d
     ports:
