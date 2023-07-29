@@ -21,7 +21,7 @@ services:
       - "8086:8086" # db port
 
   grafana:
-    image: grafana/grafana:7.1.5
+    image: grafana/grafana:10.0.3
     environment:
       - GF_PATHS_PROVISIONING=/mnt/provisioning
     volumes:
