@@ -1,4 +1,4 @@
-FROM kaspergrubbe/grubruby-jemalloc:2.7.1.9002
+FROM kaspergrubbe/grubruby-jemalloc:3.2.2.9023
   RUN apt-get -yq update && apt-get -yqq install fping
 
   WORKDIR /usr/src/app
