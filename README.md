@@ -2,6 +2,8 @@
 
 This is a Ruby re-implementation of infping, originally written in Go, https://github.com/torhve/infping by Tor Hveem.
 
+He wrote a blogpost about his motivation and inspiration here: https://hveem.no/visualizing-latency-variance-with-grafana
+
 It uses fping to ping one or more targets, it will then store the data inside of InfluxDB, and if you connect Grafana to it you can create nice graphs:
 
 ![hourly](images/screenshot01.png)
@@ -20,7 +22,7 @@ make run
 
 This will start InfluxDB, Grafana and infping.rb, have a look at `docker-compose.yml` for details. It will also initialize the database within InfluxDB and setup a Dashboard named "Pings" in Grafana.
 
-The default `username/password` for Grafana is `admin/admin`, and you can find the pre-configured "Infping.rb" dashboard in the overview here: http://localhost:3031/dashboards or by going to Dashboards -> Manage.
+The default `username/password` for Grafana is `admin/admin`, and you can find the pre-configured "infping.rb" dashboard in the overview here: http://localhost:3031/dashboards or by going to `Dashboards -> Manage`.
 
 ## Configuring
 
