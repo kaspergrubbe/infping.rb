@@ -1,0 +1,17 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB
+    type: influxdb
+    access: proxy
+    orgId: 1
+    url: http://influxdb:8086
+    isDefault: true
+    basicAuth: false
+    secureJsonData:
+      token: UPXO41QetOqRzS7Sj8Lo448YRg2GXXTyki0e5j0tjr78COqzBYDduP8v2sinMcVCwCOLK3b7IfUh6X5LNMjE6Q==
+    jsonData:
+      version: Flux
+      httpMode: "POST"
+      organization: blarghco
+      defaultBucket: infping_rb_testing
