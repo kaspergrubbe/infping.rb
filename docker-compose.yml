@@ -11,6 +11,8 @@ services:
       - DOCKER_INFLUXDB_INIT_MODE=setup
       - DOCKER_INFLUXDB_INIT_RETENTION=88w
 
+      - DOCKER_INFLUXDB_INIT_ADMIN_TOKEN=UPXO41QetOqRzS7Sj8Lo448YRg2GXXTyki0e5j0tjr78COqzBYDduP8v2sinMcVCwCOLK3b7IfUh6X5LNMjE6Q==
+
       - USER_NAME=infping
       - USER_PASS=grafeverything
       - USER_BUCKET=infping_rb_testing
