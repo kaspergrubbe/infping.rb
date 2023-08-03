@@ -31,14 +31,3 @@ services:
     ports:
       - "3031:3000" # admin port
 
-  infpingrb:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    environment:
-      - INFLUXDB_HOSTNAME=influxdb
-      - INFLUXDB_DATABASE=infping_rb_testing
-      - INFLUXDB_USERNAME=infping
-      - INFLUXDB_PASSWORD=anotsosecretpassword
-      - HOSTS=1.1.1.1,8.8.8.8
-
